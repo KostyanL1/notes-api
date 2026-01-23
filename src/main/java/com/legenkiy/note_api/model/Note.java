@@ -19,7 +19,7 @@ import java.util.Set;
 public class Note {
     @Id
     @Column(name = "id")
-    private long id;
+    private Long id;
     @Column(name = "title")
     private String title;
     @Column(name = "description")
