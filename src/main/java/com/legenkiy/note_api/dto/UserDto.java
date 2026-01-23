@@ -1,7 +1,9 @@
 package com.legenkiy.note_api.dto;
 
 
+import com.legenkiy.note_api.enums.Role;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -23,5 +25,8 @@ public class UserDto {
     @Size(min = 8, message = "Password can`t contains less then 8 chars!")
     @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@_.!?#])$")
     private String password;
+    @NotNull(message = "Role must be provided")
+    private Role role;
+
 
 }
