@@ -1,7 +1,7 @@
 package com.legenkiy.note_api.dto;
 
 
-import com.legenkiy.note_api.model.User;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -28,6 +28,6 @@ public class NoteDto {
     private boolean pinned;
     private boolean archived;
     @NotNull(message = "User id must be present!")
-    private User userId;
+    private Long userId;
 
 }

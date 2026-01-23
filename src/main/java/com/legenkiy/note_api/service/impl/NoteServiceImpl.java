@@ -6,7 +6,9 @@ import com.legenkiy.note_api.model.Note;
 import com.legenkiy.note_api.model.User;
 import com.legenkiy.note_api.repository.NoteRepository;
 import com.legenkiy.note_api.service.api.NoteService;
+import com.legenkiy.note_api.service.api.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,18 +22,19 @@ public class NoteServiceImpl implements NoteService {
 
 
     private final NoteRepository noteRepository;
+    private final UserService userService;
 
 
     @Override
     @Transactional
     public Long save(NoteDto noteDto) {
+        User user = userService.findById(noteDto.getUserId());
         Note note = new Note();
         note.setTitle(noteDto.getTitle());
         note.setDescription(noteDto.getDescription());
         note.setTags(noteDto.getTags());
-        note.setUserId(noteDto.getUserId());
+        note.setUserId(user);
         return noteRepository.save(note).getId();
-
     }
 
     @Override
