@@ -11,7 +11,7 @@ public interface NoteService {
     long save(NoteDto noteDto);
     Note findById(long id);
     List<Note> findAllByUser(User user);
-    void update(NoteDto noteDto, long id);
+    long update(NoteDto noteDto, long id);
     void delete(long id);
 
 }

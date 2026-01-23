@@ -6,6 +6,7 @@ import com.legenkiy.note_api.model.Note;
 import com.legenkiy.note_api.service.api.NoteService;
 import com.legenkiy.note_api.service.api.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jmx.export.metadata.ManagedOperation;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +34,20 @@ public class NoteController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Map<String, String>> saveNote(@RequestBody NoteDto noteDto){
-        noteService.save(noteDto);
+    public ResponseEntity<Map<String, Long>> saveNote(@RequestBody NoteDto noteDto){
+        long newNoteId = noteService.save(noteDto);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                        .body(
+                               Map.of(
+                                       "noteId", newNoteId
+                               )
+                        );
+    }
+
+
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<Map<String, String>> updateNote(@RequestBody NoteDto noteDto, @PathVariable("id") long id){
 
 
     }

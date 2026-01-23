@@ -46,7 +46,7 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
-    public void update(NoteDto noteDto, long id) {
+    public long update(NoteDto noteDto, long id) {
         Optional<Note> noteOptional = noteRepository.findById(id);
         if (noteOptional.isPresent()){
             Note note = noteOptional.get();
@@ -56,7 +56,7 @@ public class NoteServiceImpl implements NoteService {
             note.setTags(noteDto.getTags());
             note.setPinned(noteDto.isPinned());
             note.setArchive(noteDto.isArchived());
-            noteRepository.save(note);
+            return noteRepository.save(note).getId();
         }
         else {
             throw new RuntimeException("Failed to update!");
