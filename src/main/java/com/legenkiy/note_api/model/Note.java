@@ -18,6 +18,7 @@ import java.util.Set;
 @Setter
 public class Note {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
     @Column(name = "title")
