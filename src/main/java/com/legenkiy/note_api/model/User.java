@@ -1,6 +1,7 @@
 package com.legenkiy.note_api.model;
 
 
+import com.legenkiy.note_api.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,5 +23,8 @@ public class User {
     private String username;
     @Column(name = "password")
     private String password;
+    @Column(name = "role")
+    @Enumerated
+    private Role role;
 
 }
