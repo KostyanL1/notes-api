@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface NoteService {
 
-    void save(NoteDto noteDto);
+    long save(NoteDto noteDto);
     Note findById(long id);
     List<Note> findAllByUser(User user);
     void update(NoteDto noteDto, long id);

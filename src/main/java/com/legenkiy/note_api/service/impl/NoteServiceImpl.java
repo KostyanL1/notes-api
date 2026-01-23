@@ -24,13 +24,14 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
-    public void save(NoteDto noteDto) {
+    public long save(NoteDto noteDto) {
         Note note = new Note();
         note.setTitle(noteDto.getTitle());
         note.setDescription(noteDto.getDescription());
         note.setTags(noteDto.getTags());
         note.setUserId(noteDto.getUserId());
-        noteRepository.save(note);
+        return noteRepository.save(note).getId();
+
     }
 
     @Override
@@ -39,8 +40,8 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public List<Note> findAllByUser(User id) {
-        return noteRepository.findByUserId(id);
+    public List<Note> findAllByUser(User user) {
+        return noteRepository.findAllByUserId(user);
     }
 
     @Override
