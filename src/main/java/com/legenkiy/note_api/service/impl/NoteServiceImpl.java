@@ -32,7 +32,10 @@ public class NoteServiceImpl implements NoteService {
         Note note = new Note();
         note.setTitle(noteDto.getTitle());
         note.setDescription(noteDto.getDescription());
+        note.setLocalDateTime(LocalDateTime.now());
         note.setTags(noteDto.getTags());
+        note.setPinned(noteDto.isPinned());
+        note.setArchive(noteDto.isPinned());
         note.setUserId(user);
         return noteRepository.save(note).getId();
     }
