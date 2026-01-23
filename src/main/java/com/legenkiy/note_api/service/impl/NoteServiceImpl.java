@@ -24,7 +24,7 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
-    public long save(NoteDto noteDto) {
+    public Long save(NoteDto noteDto) {
         Note note = new Note();
         note.setTitle(noteDto.getTitle());
         note.setDescription(noteDto.getDescription());
@@ -35,7 +35,7 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public Note findById(long id) {
+    public Note findById(Long id) {
         return noteRepository.findById(id).orElseThrow(() -> new RuntimeException("Note not found!"));
     }
 
@@ -46,7 +46,7 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
-    public long update(NoteDto noteDto, long id) {
+    public Long update(NoteDto noteDto, Long id) {
         Optional<Note> noteOptional = noteRepository.findById(id);
         if (noteOptional.isPresent()){
             Note note = noteOptional.get();
@@ -65,7 +65,7 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
-    public void delete(long id) {
+    public void delete(Long id) {
         if (noteRepository.existsById(id)){
             noteRepository.deleteById(id);
         }

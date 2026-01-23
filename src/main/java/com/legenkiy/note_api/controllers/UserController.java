@@ -20,7 +20,7 @@ public class UserController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> userById(@PathVariable("id") long id){
+    public ResponseEntity<User> userById(@PathVariable("id") Long id){
         User user = userService.findById(id);
         return ResponseEntity.ok(user);
     }
@@ -32,13 +32,13 @@ public class UserController {
     }
 
     @PatchMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody UserDto userDto){
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody UserDto userDto){
         userService.update(userDto, id);
         return ResponseEntity.status(HttpStatus.OK).body("User was updated");
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") long id){
+    public ResponseEntity<String> delete(@PathVariable("id") Long id){
         userService.delete(id);
         return ResponseEntity.ok("User was deleted");
     }

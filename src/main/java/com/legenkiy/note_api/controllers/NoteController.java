@@ -26,7 +26,7 @@ public class NoteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Note> getNoteById(@PathVariable("id") long id) {
+    public ResponseEntity<Note> getNoteById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(noteService.findById(id));
     }
 
@@ -43,7 +43,7 @@ public class NoteController {
     }
 
     @PatchMapping("/update/{id}")
-    public ResponseEntity<Map<String, Long>> updateNote(@RequestBody NoteDto noteDto, @PathVariable("id") long id) {
+    public ResponseEntity<Map<String, Long>> updateNote(@RequestBody NoteDto noteDto, @PathVariable("id") Long id) {
         long updatedNoteId = noteService.update(noteDto, id);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -55,7 +55,7 @@ public class NoteController {
     }
 
     @PatchMapping("/delete/{id}")
-    public ResponseEntity<Map<String, String>> deleteNote(@PathVariable("id") long id){
+    public ResponseEntity<Map<String, String>> deleteNote(@PathVariable("id") Long id){
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(

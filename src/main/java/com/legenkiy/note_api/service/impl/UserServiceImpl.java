@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
     @Override
-    public User findById(long id){
+    public User findById(Long id){
         return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!") );
     }
     @Override
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void update(UserDto userDto, long id){
+    public void update(UserDto userDto, Long id){
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()){
             User user = userOptional.get();
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void delete(long id){
+    public void delete(Long id){
         if (userRepository.existsById(id)){
             userRepository.deleteById(id);
         }

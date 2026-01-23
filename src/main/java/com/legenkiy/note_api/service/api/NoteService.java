@@ -8,10 +8,10 @@ import java.util.List;
 
 public interface NoteService {
 
-    long save(NoteDto noteDto);
-    Note findById(long id);
+    Long save(NoteDto noteDto);
+    Note findById(Long id);
     List<Note> findAllByUser(User user);
-    long update(NoteDto noteDto, long id);
-    void delete(long id);
+    Long update(NoteDto noteDto, Long id);
+    void delete(Long id);
 
 }
