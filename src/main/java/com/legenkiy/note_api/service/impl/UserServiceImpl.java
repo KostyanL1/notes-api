@@ -7,6 +7,7 @@ import com.legenkiy.note_api.repository.UserRepository;
 import com.legenkiy.note_api.service.api.NoteService;
 import com.legenkiy.note_api.service.api.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<User> findAll(){
@@ -27,10 +29,10 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void save(UserDto userDto) {
+    public void register(UserDto userDto) {
         User user = new User();
         user.setUsername(userDto.getUsername());
-        user.setPassword(userDto.getPassword());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         userRepository.save(user);
     }
     @Override
