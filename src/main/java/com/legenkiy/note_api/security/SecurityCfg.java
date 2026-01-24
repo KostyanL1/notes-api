@@ -27,7 +27,7 @@ public class SecurityCfg {
                 .authorizeHttpRequests(
                         http -> http
                                 .requestMatchers("/auth/**").anonymous()
-                                .requestMatchers("/admin/**").hasRole("ROLE_ADMIN")
+                                .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/user/**", "/note/**", "/auth/logout").authenticated()
                 ).build();
     }
