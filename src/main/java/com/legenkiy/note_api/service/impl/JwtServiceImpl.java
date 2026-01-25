@@ -1,9 +1,6 @@
 package com.legenkiy.note_api.service.impl;
 
-import com.legenkiy.note_api.model.RefreshToken;
 import com.legenkiy.note_api.service.api.JwtService;
-import com.legenkiy.note_api.service.api.RefreshTokenService;
-import com.legenkiy.note_api.service.api.UserService;
 import com.legenkiy.note_api.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -11,6 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +23,6 @@ import java.util.function.Function;
 public class JwtServiceImpl implements JwtService {
 
     private final JwtUtils jwtUtils;
-    private final RefreshTokenService refreshTokenService;
-    private final UserService userService;
 
     private SecretKey getSigningKey(){
         return Keys.hmacShaKeyFor(jwtUtils.getJwtSecretKey().getBytes());
@@ -34,35 +30,29 @@ public class JwtServiceImpl implements JwtService {
 
 
     @Override
-    public String generateJwtAccessToken(UserDetails userDetails) {
+    public String generateJwtAccessToken(Authentication authentication) {
         Date issuedAt = new Date(System.currentTimeMillis());
         Date expiredAt = new Date(System.currentTimeMillis() + jwtUtils.getJwtAccessExpiration());
         return Jwts.builder()
                 .signWith(getSigningKey())
                 .setIssuedAt(issuedAt)
                 .setExpiration(expiredAt)
-                .setSubject(userDetails.getUsername())
-                .claim("authorities", userDetails.getAuthorities())
+                .setSubject(authentication.getName())
+                .claim("authorities", authentication.getAuthorities())
                 .compact();
     }
 
     @Override
-    public void generateJwtRefreshToken(UserDetails userDetails, HttpServletRequest httpServletRequest) {
+    public String generateJwtRefreshToken(Authentication authentication) {
         Date issuedAt = new Date(System.currentTimeMillis());
         Date expiredAt = new Date(System.currentTimeMillis() + jwtUtils.getJwtRefreshExpiration());
-        String token =  Jwts.builder()
+        return Jwts.builder()
                 .signWith(getSigningKey())
                 .setIssuedAt(issuedAt)
                 .setExpiration(expiredAt)
-                .setSubject(userDetails.getUsername())
-                .claim("authorities", userDetails.getAuthorities())
+                .setSubject(authentication.getName())
+                .claim("authorities", authentication.getAuthorities())
                 .compact();
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setToken(token);
-        refreshToken.setUserId(userService.findByUsername(userDetails.getUsername()));
-        refreshToken.setUserAgent(httpServletRequest.getHeader("User-Agent"));
-        refreshToken.setIp(httpServletRequest.getHeader("X-Forwarded-For"));
-        refreshTokenService.save(refreshToken);
     }
 
     @Override
@@ -82,28 +72,24 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public boolean isTokenNonExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractClaims(token, Claims::getExpiration).before(new Date(System.currentTimeMillis()));
     }
 
     @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        if (userDetails.getUsername().equals(extractUsername(token)) && isTokenNonExpired(token)){
-            return true;
-        }
-        else {
-            refreshTokenService.revoke(token);
-            return false;
-        }
+        return userDetails.getUsername().equals(extractUsername(token)) && isTokenExpired(token);
     }
 
     @Override
     public String extractTokenFromCookie(HttpServletRequest httpServletRequest) {
         Cookie[] cookies = httpServletRequest.getCookies();
         if (cookies == null) return null;
-        Cookie cookie = Arrays.stream(cookies).filter(c -> c.getName().equals("accessToken")).findFirst()
-                .orElseThrow(() -> new RuntimeException("Token not found in cookies"));
-        return cookie.getValue();
+        return Arrays.stream(cookies)
+                .filter(c -> "accessToken".equals(c.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
     }
 
 
