@@ -2,6 +2,7 @@ package com.legenkiy.note_api.service.impl;
 
 
 import com.legenkiy.note_api.model.RefreshToken;
+import com.legenkiy.note_api.model.User;
 import com.legenkiy.note_api.repository.RefreshTokenRepository;
 import com.legenkiy.note_api.service.api.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,14 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     }
     @Transactional
     @Override
-    public void save(RefreshToken refreshToken) {
+    public void save(String token, User user, String userAgent, String ip) {
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setToken(token);
+        refreshToken.setUserId(user);
+        refreshToken.setUserAgent(userAgent);
+        refreshToken.setIp(ip);
         refreshTokenRepository.save(refreshToken);
+
     }
 
     @Override
