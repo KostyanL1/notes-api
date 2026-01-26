@@ -4,11 +4,9 @@ package com.legenkiy.note_api.service.impl;
 import com.legenkiy.note_api.dto.AuthTokens;
 import com.legenkiy.note_api.dto.UserDto;
 import com.legenkiy.note_api.model.User;
-import com.legenkiy.note_api.service.api.AuthService;
-import com.legenkiy.note_api.service.api.JwtService;
-import com.legenkiy.note_api.service.api.RefreshTokenService;
-import com.legenkiy.note_api.service.api.UserService;
+import com.legenkiy.note_api.service.api.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +21,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
+    private final CookieService cookieService;
 
 
     @Override
@@ -43,8 +42,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void logout(UserDto userDto) {
-        return new AuthTokens();
+    public void logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        String refreshToken = cookieService.extractTokenFromCookie("refreshToken", httpServletRequest);
+        if (refreshToken != null){
+            refreshTokenService.revoke(refreshToken);
+        }
+        cookieService.deleteCookie("accessToken", httpServletResponse);
+        cookieService.deleteCookie("refreshToken", httpServletResponse);
+
     }
 
 
