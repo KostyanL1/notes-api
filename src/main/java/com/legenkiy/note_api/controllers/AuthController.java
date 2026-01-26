@@ -33,12 +33,7 @@ public class AuthController {
 
 
     public Cookie createCookieWithAccessToken(String accessToken, int maxAge){
-        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-        accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setSecure(true);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(maxAge);
-        return accessTokenCookie;
+
     }
 
 
