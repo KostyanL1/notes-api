@@ -5,15 +5,13 @@ import com.legenkiy.note_api.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -81,16 +79,7 @@ public class JwtServiceImpl implements JwtService {
         return userDetails.getUsername().equals(extractUsername(token)) && isTokenExpired(token);
     }
 
-    @Override
-    public String extractTokenFromCookie(HttpServletRequest httpServletRequest) {
-        Cookie[] cookies = httpServletRequest.getCookies();
-        if (cookies == null) return null;
-        return Arrays.stream(cookies)
-                .filter(c -> "accessToken".equals(c.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
-    }
+
 
 
 

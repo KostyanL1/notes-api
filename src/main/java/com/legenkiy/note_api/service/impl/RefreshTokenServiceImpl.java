@@ -32,7 +32,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public void save(String token, User user, String userAgent, String ip) {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setToken(token);
-        refreshToken.setUserId(user);
+        refreshToken.setUser(user);
         refreshToken.setUserAgent(userAgent);
         refreshToken.setIp(ip);
         refreshTokenRepository.save(refreshToken);
