@@ -1,6 +1,7 @@
 package com.legenkiy.note_api.service.api;
 
 import com.legenkiy.note_api.dto.NoteDto;
+
 import com.legenkiy.note_api.model.Note;
 import com.legenkiy.note_api.model.User;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 public interface NoteService {
 
-    Long save(NoteDto noteDto);
+    Long save(NoteDto noteDto, User user);
 
     Note findById(Long id);
 

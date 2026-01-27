@@ -3,10 +3,17 @@ package com.legenkiy.note_api.controllers;
 
 import com.legenkiy.note_api.dto.NoteDto;
 import com.legenkiy.note_api.model.Note;
+import com.legenkiy.note_api.model.User;
+import com.legenkiy.note_api.service.api.CookieService;
+import com.legenkiy.note_api.service.api.JwtService;
 import com.legenkiy.note_api.service.api.NoteService;
+import com.legenkiy.note_api.service.api.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,11 +25,13 @@ import java.util.Map;
 public class NoteController {
 
     private final NoteService noteService;
+    private final UserService userService;
 
 
     @GetMapping()
-    public ResponseEntity<List<Note>> getAllByUser() {
-        return ResponseEntity.ok(List.of());
+    public ResponseEntity<List<Note>> getAllByUser(Authentication authentication) {
+        User user = userService.findByUsername(authentication.getName());
+        return ResponseEntity.ok(noteService.findAllByUser(user));
     }
 
     @GetMapping("/{id}")
@@ -31,8 +40,9 @@ public class NoteController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Map<String, Long>> saveNote(@RequestBody NoteDto noteDto) {
-        long newNoteId = noteService.save(noteDto);
+    public ResponseEntity<Map<String, Long>> saveNote(@RequestBody NoteDto noteDto, Authentication authentication) {
+        User user = userService.findByUsername(authentication.getName());
+        long newNoteId = noteService.save(noteDto, user);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(
