@@ -3,6 +3,7 @@ package com.legenkiy.note_api.service.api;
 
 import com.legenkiy.note_api.dto.UserDto;
 import com.legenkiy.note_api.model.User;
+import org.springframework.security.core.Authentication;
 
 
 import java.util.List;
@@ -19,8 +20,8 @@ public interface UserService {
 
     User findByUsername(String username);
 
-    void update(UserDto user, Long id);
+    void update(UserDto user, Long id, Authentication authentication);
 
-    void delete(Long id);
+    void delete(Long id, Authentication authentication);
 
 }

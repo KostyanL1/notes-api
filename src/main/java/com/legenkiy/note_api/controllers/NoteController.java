@@ -14,10 +14,12 @@ import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/notes")
@@ -35,8 +37,20 @@ public class NoteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Note> getNoteById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(noteService.findById(id));
+    public ResponseEntity<?> getNoteById(@PathVariable("id") Long id, Authentication authentication) {
+        Note note = noteService.findById(id);
+        if (Objects.equals(note.getUser().getId(), userService.findByUsername(authentication.getName()).getId())){
+            return ResponseEntity.ok(note);
+        }else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(
+                            Map.of(
+                                    "message", "note not found"
+                            )
+                    );
+        }
+
     }
 
     @PostMapping("/save")
@@ -53,8 +67,8 @@ public class NoteController {
     }
 
     @PatchMapping("/update/{id}")
-    public ResponseEntity<Map<String, Long>> updateNote(@RequestBody NoteDto noteDto, @PathVariable("id") Long id) {
-        long updatedNoteId = noteService.update(noteDto, id);
+    public ResponseEntity<Map<String, Long>> updateNote(@RequestBody NoteDto noteDto, @PathVariable("id") Long id, Authentication authentication) {
+        long updatedNoteId = noteService.update(noteDto, id, authentication);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(
@@ -65,7 +79,7 @@ public class NoteController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Map<String, String>> deleteNote(@PathVariable("id") Long id) {
+    public ResponseEntity<Map<String, String>> deleteNote(@PathVariable("id") Long id, Authentication authentication) {
         noteService.delete(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
