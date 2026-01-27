@@ -6,11 +6,9 @@ import com.legenkiy.note_api.service.api.AuthService;
 import com.legenkiy.note_api.service.api.CookieService;
 import com.legenkiy.note_api.utils.JwtUtils;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.message.Message;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
 import java.util.Map;
 
 @RestController
@@ -34,10 +31,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> register(@RequestBody UserDto userDto, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
         AuthTokens authTokens = authService.register(userDto, httpServletRequest);
-        Cookie cookieAccessToken = cookieService.createCookieWithToken("accessToken", authTokens.getAccess(), Integer.parseInt(jwtUtils.getJwtAccessExpiration()) / 1000);
-        Cookie cookieRefreshToken = cookieService.createCookieWithToken("refreshToken", authTokens.getRefresh(), Integer.parseInt(jwtUtils.getJwtRefreshExpiration()) / 1000);
-        httpServletResponse.addCookie(cookieAccessToken);
-        httpServletResponse.addCookie(cookieRefreshToken);
+        setCookies(httpServletResponse, authTokens);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(
@@ -50,10 +44,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody UserDto userDto, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
         AuthTokens authTokens = authService.login(userDto, httpServletRequest);
-        Cookie cookieAccessToken = cookieService.createCookieWithToken("accessToken", authTokens.getAccess(), Integer.parseInt(jwtUtils.getJwtAccessExpiration()) / 1000);
-        Cookie cookieRefreshToken = cookieService.createCookieWithToken("refreshToken", authTokens.getRefresh(), Integer.parseInt(jwtUtils.getJwtRefreshExpiration()) / 1000);
-        httpServletResponse.addCookie(cookieAccessToken);
-        httpServletResponse.addCookie(cookieRefreshToken);
+        setCookies(httpServletResponse, authTokens);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(
@@ -66,10 +57,7 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<Map<String, String>> refresh(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
         AuthTokens authTokens = authService.refresh(httpServletRequest);
-        Cookie cookieAccessToken = cookieService.createCookieWithToken("accessToken", authTokens.getAccess(), Integer.parseInt(jwtUtils.getJwtAccessExpiration()) / 1000);
-        Cookie cookieRefreshToken = cookieService.createCookieWithToken("refreshToken", authTokens.getRefresh(), Integer.parseInt(jwtUtils.getJwtRefreshExpiration()) / 1000);
-        httpServletResponse.addCookie(cookieAccessToken);
-        httpServletResponse.addCookie(cookieRefreshToken);
+        setCookies(httpServletResponse, authTokens);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(
@@ -78,6 +66,28 @@ public class AuthController {
                         )
                 );
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
+        authService.logout(httpServletRequest);
+        cookieService.deleteCookie("accessToken", httpServletResponse);
+        cookieService.deleteCookie("refreshToken", httpServletResponse);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        Map.of(
+                                "message", "user successfully logged out"
+                        )
+                );
+    }
+
+    private void setCookies(HttpServletResponse httpServletResponse, AuthTokens authTokens) {
+        Cookie cookieAccessToken = cookieService.createCookieWithToken("accessToken", authTokens.getAccess(),(int) Long.parseLong(jwtUtils.getJwtAccessExpiration()) / 1000);
+        Cookie cookieRefreshToken = cookieService.createCookieWithToken("refreshToken", authTokens.getRefresh(), (int) Long.parseLong(jwtUtils.getJwtRefreshExpiration()) / 1000);
+        httpServletResponse.addCookie(cookieAccessToken);
+        httpServletResponse.addCookie(cookieRefreshToken);
+    }
+
 
 
 }

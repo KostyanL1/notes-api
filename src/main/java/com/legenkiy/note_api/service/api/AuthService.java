@@ -10,6 +10,6 @@ public interface AuthService {
     AuthTokens register(UserDto userDto, HttpServletRequest httpServletRequest);
     AuthTokens login(UserDto userDto, HttpServletRequest httpServletRequest);
     AuthTokens refresh(HttpServletRequest httpServletRequest);
-    void logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
+    void logout(HttpServletRequest httpServletRequest);
 
 }

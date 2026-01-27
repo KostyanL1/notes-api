@@ -69,13 +69,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public void logout(HttpServletRequest httpServletRequest) {
         String refreshToken = cookieService.extractTokenFromCookie("refreshToken", httpServletRequest);
         if (refreshToken != null) {
             refreshTokenService.revoke(refreshToken);
         }
-        cookieService.deleteCookie("accessToken", httpServletResponse);
-        cookieService.deleteCookie("refreshToken", httpServletResponse);
 
     }
 
