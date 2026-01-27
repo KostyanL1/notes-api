@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Function;
 
 
@@ -37,7 +38,7 @@ public class JwtServiceImpl implements JwtService {
                 .setIssuedAt(issuedAt)
                 .setExpiration(expiredAt)
                 .setSubject(authentication.getName())
-                .claim("authorities", authentication.getAuthorities())
+                .claim("authorities", authentication.getAuthorities().stream().map(a -> a.getAuthority()).toList())
                 .compact();
     }
 
@@ -50,7 +51,7 @@ public class JwtServiceImpl implements JwtService {
                 .setIssuedAt(issuedAt)
                 .setExpiration(expiredAt)
                 .setSubject(authentication.getName())
-                .claim("authorities", authentication.getAuthorities())
+                .claim("authorities", authentication.getAuthorities().stream().map(a -> a.getAuthority()).toList())
                 .compact();
     }
 
