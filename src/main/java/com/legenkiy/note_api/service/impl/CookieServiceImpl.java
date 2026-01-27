@@ -19,25 +19,14 @@ public class CookieServiceImpl implements CookieService {
 
 
     @Override
-    public Cookie createCookieWithAccessToken(String accessToken, int maxAge) {
-        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-        accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setSecure(secure);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setAttribute("sameSite", sameSite);
-        accessTokenCookie.setMaxAge(maxAge);
-        return accessTokenCookie;
-    }
-
-    @Override
-    public Cookie createCookieWithRefreshToken(String refreshToken, int maxAge) {
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(secure);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setAttribute("sameSite", sameSite);
-        refreshTokenCookie.setMaxAge(maxAge);
-        return refreshTokenCookie;
+    public Cookie createCookieWithToken(String name, String token, int maxAge){
+        Cookie cookieToken = new Cookie(name, token);
+        cookieToken.setHttpOnly(true);
+        cookieToken.setSecure(secure);
+        cookieToken.setPath("/");
+        cookieToken.setAttribute("sameSite", sameSite);
+        cookieToken.setMaxAge(maxAge);
+        return cookieToken;
     }
 
     @Override
