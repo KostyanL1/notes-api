@@ -19,7 +19,7 @@ public class CookieServiceImpl implements CookieService {
 
 
     @Override
-    public Cookie createCookieWithToken(String name, String token, int maxAge){
+    public Cookie createCookieWithToken(String name, String token, int maxAge) {
         Cookie cookieToken = new Cookie(name, token);
         cookieToken.setHttpOnly(true);
         cookieToken.setSecure(secure);

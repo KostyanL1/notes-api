@@ -2,12 +2,11 @@ package com.legenkiy.note_api.service.impl;
 
 
 import com.legenkiy.note_api.dto.UserDto;
+import com.legenkiy.note_api.enums.Role;
 import com.legenkiy.note_api.model.User;
 import com.legenkiy.note_api.repository.UserRepository;
 import com.legenkiy.note_api.service.api.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,17 +21,15 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-
 
 
     @Override
-    public boolean isExists(String username){
+    public boolean isExists(String username) {
         return userRepository.existsByUsername(username);
     }
 
     @Override
-    public List<User> findAll(){
+    public List<User> findAll() {
         return userRepository.findAll();
     }
 
@@ -43,47 +40,45 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setUsername(userDto.getUsername());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        user.setRole(Role.USER);
         return userRepository.save(user);
 
     }
 
 
     @Override
-    public User findById(Long id){
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!") );
+    public User findById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!"));
     }
+
     @Override
-    public User findByUsername(String username){
+    public User findByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found!"));
     }
 
     @Override
     @Transactional
-    public void update(UserDto userDto, Long id){
+    public void update(UserDto userDto, Long id) {
         Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isPresent()){
+        if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setUsername(userDto.getUsername());
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
             userRepository.save(user);
-        }
-        else {
+        } else {
             throw new RuntimeException("Failed to update user!");
         }
     }
 
     @Override
     @Transactional
-    public void delete(Long id){
-        if (userRepository.existsById(id)){
+    public void delete(Long id) {
+        if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
-        }
-        else {
+        } else {
             throw new RuntimeException("Failed to delete user!");
         }
     }
-
-
 
 
 }

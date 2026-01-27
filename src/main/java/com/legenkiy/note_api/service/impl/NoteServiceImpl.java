@@ -8,7 +8,6 @@ import com.legenkiy.note_api.repository.NoteRepository;
 import com.legenkiy.note_api.service.api.NoteService;
 import com.legenkiy.note_api.service.api.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +53,7 @@ public class NoteServiceImpl implements NoteService {
     @Transactional
     public Long update(NoteDto noteDto, Long id) {
         Optional<Note> noteOptional = noteRepository.findById(id);
-        if (noteOptional.isPresent()){
+        if (noteOptional.isPresent()) {
             Note note = noteOptional.get();
             note.setTitle(noteDto.getTitle());
             note.setDescription(noteDto.getDescription());
@@ -63,8 +62,7 @@ public class NoteServiceImpl implements NoteService {
             note.setPinned(noteDto.isPinned());
             note.setArchive(noteDto.isArchived());
             return noteRepository.save(note).getId();
-        }
-        else {
+        } else {
             throw new RuntimeException("Failed to update!");
         }
     }
@@ -72,10 +70,9 @@ public class NoteServiceImpl implements NoteService {
     @Override
     @Transactional
     public void delete(Long id) {
-        if (noteRepository.existsById(id)){
+        if (noteRepository.existsById(id)) {
             noteRepository.deleteById(id);
-        }
-        else {
+        } else {
             throw new RuntimeException("Failed to delete note!");
         }
     }

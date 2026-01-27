@@ -55,7 +55,7 @@ public class NoteController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Map<String, String>> deleteNote(@PathVariable("id") Long id){
+    public ResponseEntity<Map<String, String>> deleteNote(@PathVariable("id") Long id) {
         noteService.delete(id);
         return ResponseEntity
                 .status(HttpStatus.OK)

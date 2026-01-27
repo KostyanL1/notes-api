@@ -6,6 +6,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +23,7 @@ public class JwtServiceImpl implements JwtService {
 
     private final JwtUtils jwtUtils;
 
-    private SecretKey getSigningKey(){
+    private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(jwtUtils.getJwtSecretKey().getBytes());
     }
 
@@ -30,7 +31,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String generateJwtAccessToken(Authentication authentication) {
         Date issuedAt = new Date(System.currentTimeMillis());
-        Date expiredAt = new Date(System.currentTimeMillis() + jwtUtils.getJwtAccessExpiration());
+        Date expiredAt = new Date(System.currentTimeMillis() + Integer.parseInt(jwtUtils.getJwtAccessExpiration()));
         return Jwts.builder()
                 .signWith(getSigningKey())
                 .setIssuedAt(issuedAt)
@@ -43,7 +44,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String generateJwtRefreshToken(Authentication authentication) {
         Date issuedAt = new Date(System.currentTimeMillis());
-        Date expiredAt = new Date(System.currentTimeMillis() + jwtUtils.getJwtRefreshExpiration());
+        Date expiredAt = new Date(System.currentTimeMillis() + Integer.parseInt(jwtUtils.getJwtRefreshExpiration()));
         return Jwts.builder()
                 .signWith(getSigningKey())
                 .setIssuedAt(issuedAt)
@@ -78,10 +79,6 @@ public class JwtServiceImpl implements JwtService {
     public boolean isTokenValid(String token, UserDetails userDetails) {
         return userDetails.getUsername().equals(extractUsername(token)) && isTokenExpired(token);
     }
-
-
-
-
 
 
 }

@@ -1,7 +1,6 @@
 package com.legenkiy.note_api.security.filter;
 
 import com.legenkiy.note_api.service.api.JwtService;
-import com.legenkiy.note_api.service.api.RefreshTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,13 +25,13 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String bearerToken = request.getHeader("Authorization");
-        if (bearerToken == null || !bearerToken.startsWith("Bearer ")){
+        if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
         String token = bearerToken.substring(7);
         UserDetails userDetails = userDetailsService.loadUserByUsername(jwtService.extractUsername(token));
-        if (!jwtService.isTokenValid(token, userDetails)){
+        if (!jwtService.isTokenValid(token, userDetails)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -42,7 +41,7 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
                 userDetails.getAuthorities()
         );
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
 
     }
 }

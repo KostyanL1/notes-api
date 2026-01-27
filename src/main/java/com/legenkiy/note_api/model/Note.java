@@ -43,5 +43,4 @@ public class Note {
     private User userId;
 
 
-
 }
