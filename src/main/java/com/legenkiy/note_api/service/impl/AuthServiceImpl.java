@@ -3,14 +3,19 @@ package com.legenkiy.note_api.service.impl;
 
 import com.legenkiy.note_api.dto.AuthTokens;
 import com.legenkiy.note_api.dto.UserDto;
+import com.legenkiy.note_api.model.RefreshToken;
 import com.legenkiy.note_api.model.User;
+import com.legenkiy.note_api.repository.RefreshTokenRepository;
 import com.legenkiy.note_api.service.api.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,6 +27,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
     private final CookieService cookieService;
+    private final UserDetailsService userDetailsService;
 
 
     @Override
@@ -37,14 +43,35 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthTokens refresh(String token, HttpServletRequest httpServletRequest) {
-        return new AuthTokens();
+    public AuthTokens refresh(HttpServletRequest httpServletRequest) {
+        String refreshToken = cookieService.extractTokenFromCookie("refreshToken", httpServletRequest);
+        if (refreshToken == null) {
+            throw new RuntimeException("Token not found");
+        }
+        RefreshToken refreshTokenEntity = refreshTokenService.findByToken(refreshToken);
+        User user = refreshTokenEntity.getUser();
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+        if (refreshTokenEntity.isRevoked() || !jwtService.isTokenValid(refreshToken, userDetails)) {
+            throw new RuntimeException("Invalid refresh token");
+        }
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        String accessToken = jwtService.generateJwtAccessToken(authentication);
+        refreshTokenService.revoke(refreshToken);
+        String newRefreshToken = jwtService.generateJwtRefreshToken(authentication);
+        refreshTokenService.save(
+                newRefreshToken,
+                user,
+                httpServletRequest.getHeader("User-Agent"),
+                httpServletRequest.getRemoteAddr()
+        );
+        return new AuthTokens(newRefreshToken, accessToken);
+
     }
 
     @Override
     public void logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         String refreshToken = cookieService.extractTokenFromCookie("refreshToken", httpServletRequest);
-        if (refreshToken != null){
+        if (refreshToken != null) {
             refreshTokenService.revoke(refreshToken);
         }
         cookieService.deleteCookie("accessToken", httpServletResponse);
