@@ -3,9 +3,11 @@ package com.legenkiy.note_api.service.impl;
 
 import com.legenkiy.note_api.dto.AuthTokens;
 import com.legenkiy.note_api.dto.UserDto;
+import com.legenkiy.note_api.exceptions.ObjectNotFoundExceprion;
 import com.legenkiy.note_api.model.RefreshToken;
 import com.legenkiy.note_api.model.User;
 import com.legenkiy.note_api.service.api.*;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,13 +45,13 @@ public class AuthServiceImpl implements AuthService {
     public AuthTokens refresh(HttpServletRequest httpServletRequest) {
         String refreshToken = cookieService.extractTokenFromCookie("refreshToken", httpServletRequest);
         if (refreshToken == null) {
-            throw new RuntimeException("Token not found");
+            throw new ObjectNotFoundExceprion("Token not found");
         }
         RefreshToken refreshTokenEntity = refreshTokenService.findByToken(refreshToken);
         User user = refreshTokenEntity.getUser();
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
         if (refreshTokenEntity.isRevoked() || !jwtService.isTokenValid(refreshToken, userDetails)) {
-            throw new RuntimeException("Invalid refresh token");
+            throw new JwtException("Invalid refresh token");
         }
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         String accessToken = jwtService.generateJwtAccessToken(authentication);
