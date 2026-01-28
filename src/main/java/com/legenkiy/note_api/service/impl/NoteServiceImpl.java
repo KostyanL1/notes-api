@@ -39,7 +39,7 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public Note findById(Long id, Authentication authentication) {
-        return getNotIfAuthorized(id, authentication);
+        return getNoteIfAuthorized(id, authentication);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class NoteServiceImpl implements NoteService {
     @Override
     @Transactional
     public Long update(NoteDto noteDto, Long id, Authentication authentication) {
-        Note note = getNotIfAuthorized(id, authentication);
+        Note note = getNoteIfAuthorized(id, authentication);
         note.setTitle(noteDto.getTitle());
         note.setDescription(noteDto.getDescription());
         note.setLocalDateTime(LocalDateTime.now());
@@ -64,11 +64,11 @@ public class NoteServiceImpl implements NoteService {
     @Override
     @Transactional
     public void delete(Long id, Authentication authentication) {
-        noteRepository.deleteById(getNotIfAuthorized(id, authentication).getId());
+        noteRepository.deleteById(getNoteIfAuthorized(id, authentication).getId());
 
     }
 
-    private Note getNotIfAuthorized(Long id, Authentication authentication) {
+    private Note getNoteIfAuthorized(Long id, Authentication authentication) {
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(a -> Objects.equals(a.getAuthority(), "ROLE_ADMIN"));
         Note note;

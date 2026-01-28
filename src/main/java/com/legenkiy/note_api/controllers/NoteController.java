@@ -39,17 +39,7 @@ public class NoteController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getNoteById(@PathVariable("id") Long id, Authentication authentication) {
         Note note = noteService.findById(id, authentication);
-        if (Objects.equals(note.getUser().getId(), userService.findByUsername(authentication.getName()).getId())){
-            return ResponseEntity.ok(note);
-        }else {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(
-                            Map.of(
-                                    "message", "note not found"
-                            )
-                    );
-        }
+        return ResponseEntity.ok(note);
 
     }
 
