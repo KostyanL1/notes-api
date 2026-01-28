@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -33,6 +35,7 @@ public class Note {
             joinColumns = @JoinColumn(name = "note_id")
     )
     @Column(name = "tag")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<String> tags;
     @Column(name = "pinned")
     private boolean pinned;
@@ -40,6 +43,7 @@ public class Note {
     private boolean archive;
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
 
