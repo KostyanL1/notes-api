@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
     public void update(UserDto userDto, Long id, Authentication authentication) {
         User user = getUserIfAuthorized(id, authentication);
         user.setUsername(userDto.getUsername());
-        if (userDto.getPassword() != null && !userDto.getPassword().isBlank()){
+        if (userDto.getPassword() != null && !userDto.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         }
         userRepository.save(user);
@@ -77,15 +77,14 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
     private User getUserIfAuthorized(Long id, Authentication authentication) {
         boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> Objects.equals(a.getAuthority(), "ROLE_ADMIN"));
         User user;
-        if (isAdmin){
+        if (isAdmin) {
             user = userRepository.findById(id).orElseThrow(
                     () -> new RuntimeException("User not found")
             );
-        }else {
+        } else {
             user = userRepository.findByIdAndUsername(id, authentication.getName()).orElseThrow(
                     () -> new RuntimeException("Forbidden")
             );
