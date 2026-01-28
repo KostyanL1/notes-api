@@ -32,7 +32,7 @@ public class NoteServiceImpl implements NoteService {
         note.setLocalDateTime(LocalDateTime.now());
         note.setTags(noteDto.getTags());
         note.setPinned(noteDto.isPinned());
-        note.setArchive(noteDto.isPinned());
+        note.setArchive(noteDto.isArchived());
         note.setUser(user);
         return noteRepository.save(note).getId();
     }
@@ -43,9 +43,9 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public List<Note> findAllByUser(User user) {
+    public List<Note> findAllByUserId(Long id) {
 
-        return noteRepository.findAllByUserId(user);
+        return noteRepository.findAllByUserId(id);
     }
 
     @Override

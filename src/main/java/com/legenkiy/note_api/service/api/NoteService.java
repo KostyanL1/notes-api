@@ -14,7 +14,7 @@ public interface NoteService {
 
     Note findById(Long id, Authentication authentication);
 
-    List<Note> findAllByUser(User user);
+    List<Note> findAllByUserId(Long id);
 
     Long update(NoteDto noteDto, Long id, Authentication authentication);
 
