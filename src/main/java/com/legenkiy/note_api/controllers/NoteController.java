@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/notes")
@@ -24,17 +26,20 @@ public class NoteController {
 
 
     @GetMapping()
-    public ResponseEntity<List<NoteDto>> getAllByUser(Authentication authentication) {
+    public ResponseEntity<Map<Long, NoteDto>> getAllByUser(Authentication authentication) {
         User user = userService.findByUsername(authentication.getName());
-        List<NoteDto> noteDtoList = noteService.findAllByUserId(user.getId()).stream()
-                .map(n -> new NoteDto(
-                        n.getTitle(),
-                        n.getDescription(),
-                        n.getTags(),
-                        n.isPinned(),
-                        n.isArchive()
-                        )).toList();
-        return ResponseEntity.ok(noteDtoList);
+        Map<Long, NoteDto> noteDtoMap = noteService.findAllByUserId(user.getId()).stream()
+                .collect(
+                        Collectors.toMap(
+                                n -> n.getId(),
+                                n -> new NoteDto(
+                                        n.getTitle(),
+                                        n.getDescription(),
+                                        n.getTags(),
+                                        n.isPinned(),
+                                        n.isArchive()
+                                )));
+        return ResponseEntity.ok(noteDtoMap);
     }
 
     @GetMapping("/{id}")
