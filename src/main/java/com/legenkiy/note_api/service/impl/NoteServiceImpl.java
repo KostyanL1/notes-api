@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,8 +38,8 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public Note findById(Long id) {
-        return noteRepository.findById(id).orElseThrow(() -> new RuntimeException("Note not found!"));
+    public Note findById(Long id, Authentication authentication) {
+        return getNotIfAuthorized(id, authentication);
     }
 
     @Override
@@ -52,16 +51,7 @@ public class NoteServiceImpl implements NoteService {
     @Override
     @Transactional
     public Long update(NoteDto noteDto, Long id, Authentication authentication) {
-        boolean isAdmin = authentication.getAuthorities().stream()
-                .anyMatch(a -> Objects.equals(a.getAuthority(), "ROLE_ADMIN"));
-        Note note;
-        if (isAdmin) {
-            note = noteRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Note not found"));
-        } else {
-            note = noteRepository.findByIdAndUserUsername(id, authentication.getName())
-                    .orElseThrow(() -> new RuntimeException("Not your note"));
-        }
+        Note note = getNotIfAuthorized(id, authentication);
         note.setTitle(noteDto.getTitle());
         note.setDescription(noteDto.getDescription());
         note.setLocalDateTime(LocalDateTime.now());
@@ -73,11 +63,22 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
-    public void delete(Long id) {
-        if (noteRepository.existsById(id)) {
-            noteRepository.deleteById(id);
+    public void delete(Long id, Authentication authentication) {
+        noteRepository.deleteById(getNotIfAuthorized(id, authentication).getId());
+
+    }
+
+    private Note getNotIfAuthorized(Long id, Authentication authentication) {
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> Objects.equals(a.getAuthority(), "ROLE_ADMIN"));
+        Note note;
+        if (isAdmin) {
+            note = noteRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Note not found"));
         } else {
-            throw new RuntimeException("Failed to delete note!");
+            note = noteRepository.findByIdAndUserUsername(id, authentication.getName())
+                    .orElseThrow(() -> new RuntimeException("Not your note"));
         }
+        return note;
     }
 }

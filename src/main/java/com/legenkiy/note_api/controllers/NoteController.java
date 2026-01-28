@@ -38,7 +38,7 @@ public class NoteController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getNoteById(@PathVariable("id") Long id, Authentication authentication) {
-        Note note = noteService.findById(id);
+        Note note = noteService.findById(id, authentication);
         if (Objects.equals(note.getUser().getId(), userService.findByUsername(authentication.getName()).getId())){
             return ResponseEntity.ok(note);
         }else {
@@ -80,7 +80,7 @@ public class NoteController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Map<String, String>> deleteNote(@PathVariable("id") Long id, Authentication authentication) {
-        noteService.delete(id);
+        noteService.delete(id, authentication);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(

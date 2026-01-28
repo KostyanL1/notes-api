@@ -12,12 +12,12 @@ public interface NoteService {
 
     Long save(NoteDto noteDto, User user);
 
-    Note findById(Long id);
+    Note findById(Long id, Authentication authentication);
 
     List<Note> findAllByUser(User user);
 
     Long update(NoteDto noteDto, Long id, Authentication authentication);
 
-    void delete(Long id);
+    void delete(Long id, Authentication authentication);
 
 }
