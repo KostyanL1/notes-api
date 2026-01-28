@@ -3,10 +3,12 @@ package com.legenkiy.note_api.service.impl;
 
 import com.legenkiy.note_api.dto.UserDto;
 import com.legenkiy.note_api.enums.Role;
+import com.legenkiy.note_api.exceptions.ObjectNotFoundExceprion;
 import com.legenkiy.note_api.model.User;
 import com.legenkiy.note_api.repository.UserRepository;
 import com.legenkiy.note_api.service.api.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,24 +39,22 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User save(UserDto userDto) {
-
         User user = new User();
         user.setUsername(userDto.getUsername());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setRole(Role.USER);
         return userRepository.save(user);
-
     }
 
 
     @Override
     public User findById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!"));
+        return userRepository.findById(id).orElseThrow(() -> new ObjectNotFoundExceprion("User not found!"));
     }
 
     @Override
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found!"));
+        return userRepository.findByUsername(username).orElseThrow(() -> new ObjectNotFoundExceprion("User not found!"));
     }
 
     @Override
@@ -82,11 +82,11 @@ public class UserServiceImpl implements UserService {
         User user;
         if (isAdmin) {
             user = userRepository.findById(id).orElseThrow(
-                    () -> new RuntimeException("User not found")
+                    () -> new ObjectNotFoundExceprion("User not found")
             );
         } else {
             user = userRepository.findByIdAndUsername(id, authentication.getName()).orElseThrow(
-                    () -> new RuntimeException("Forbidden")
+                    () -> new AccessDeniedException("Forbidden")
             );
         }
         return user;
