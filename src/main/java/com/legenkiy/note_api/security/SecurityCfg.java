@@ -35,9 +35,9 @@ public class SecurityCfg {
                 .authorizeHttpRequests(
                         http -> http
                                 .requestMatchers("/auth/register", "/auth/login").anonymous()
-                                .requestMatchers("/auth/refresh").permitAll()
+                                .requestMatchers("/auth/refresh", "/auth/logout").permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/user/**", "/note/**", "/auth/logout").authenticated()
+                                .requestMatchers("/user/**", "/note/**").authenticated()
                                 .anyRequest().permitAll()
                 ).build();
     }
