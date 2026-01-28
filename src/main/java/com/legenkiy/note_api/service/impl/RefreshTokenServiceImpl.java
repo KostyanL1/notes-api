@@ -27,6 +27,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public RefreshToken findByToken(String token) {
         return refreshTokenRepository.findByToken(token).orElseThrow(() -> new RuntimeException("Token not found!"));
     }
+
     @Transactional
     @Override
     public void save(String token, User user, String userAgent, String ip) {
@@ -53,9 +54,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public void delete(Long id) {
-        if (refreshTokenRepository.existsById(id)){
+        if (refreshTokenRepository.existsById(id)) {
             refreshTokenRepository.deleteById(id);
-        }else {
+        } else {
             throw new RuntimeException("Token wasn`t deleted. Token doesn`t exist");
         }
 

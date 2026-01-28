@@ -8,12 +8,16 @@ import java.util.List;
 public interface RefreshTokenService {
 
     List<RefreshToken> findAll();
-    RefreshToken findByToken(String token);
-    void save(String token, User user, String userAgent, String ip);
-    RefreshToken findById(Long id);
-    void revoke(String token);
-    void delete(Long id);
 
+    RefreshToken findByToken(String token);
+
+    void save(String token, User user, String userAgent, String ip);
+
+    RefreshToken findById(Long id);
+
+    void revoke(String token);
+
+    void delete(Long id);
 
 
 }

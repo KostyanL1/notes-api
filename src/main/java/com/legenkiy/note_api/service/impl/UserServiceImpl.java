@@ -2,18 +2,18 @@ package com.legenkiy.note_api.service.impl;
 
 
 import com.legenkiy.note_api.dto.UserDto;
+import com.legenkiy.note_api.enums.Role;
 import com.legenkiy.note_api.model.User;
 import com.legenkiy.note_api.repository.UserRepository;
 import com.legenkiy.note_api.service.api.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 
 @Service
@@ -22,17 +22,15 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-
 
 
     @Override
-    public boolean isExists(String username){
+    public boolean isExists(String username) {
         return userRepository.existsByUsername(username);
     }
 
     @Override
-    public List<User> findAll(){
+    public List<User> findAll() {
         return userRepository.findAll();
     }
 
@@ -43,47 +41,56 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setUsername(userDto.getUsername());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        user.setRole(Role.USER);
         return userRepository.save(user);
 
     }
 
 
     @Override
-    public User findById(Long id){
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!") );
+    public User findById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!"));
     }
+
     @Override
-    public User findByUsername(String username){
+    public User findByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found!"));
     }
 
     @Override
     @Transactional
-    public void update(UserDto userDto, Long id){
-        Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isPresent()){
-            User user = userOptional.get();
-            user.setUsername(userDto.getUsername());
+    public void update(UserDto userDto, Long id, Authentication authentication) {
+        User user = getUserIfAuthorized(id, authentication);
+        user.setUsername(userDto.getUsername());
+        if (userDto.getPassword() != null && !userDto.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-            userRepository.save(user);
         }
-        else {
-            throw new RuntimeException("Failed to update user!");
-        }
+        userRepository.save(user);
     }
 
     @Override
     @Transactional
-    public void delete(Long id){
-        if (userRepository.existsById(id)){
-            userRepository.deleteById(id);
-        }
-        else {
-            throw new RuntimeException("Failed to delete user!");
-        }
+    public void delete(Long id, Authentication authentication) {
+        User user = getUserIfAuthorized(id, authentication);
+        userRepository.deleteById(user.getId());
+
     }
 
 
+    private User getUserIfAuthorized(Long id, Authentication authentication) {
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> Objects.equals(a.getAuthority(), "ROLE_ADMIN"));
+        User user;
+        if (isAdmin) {
+            user = userRepository.findById(id).orElseThrow(
+                    () -> new RuntimeException("User not found")
+            );
+        } else {
+            user = userRepository.findByIdAndUsername(id, authentication.getName()).orElseThrow(
+                    () -> new RuntimeException("Forbidden")
+            );
+        }
+        return user;
+    }
 
 
 }

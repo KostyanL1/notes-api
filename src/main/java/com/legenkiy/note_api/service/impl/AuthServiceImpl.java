@@ -5,12 +5,9 @@ import com.legenkiy.note_api.dto.AuthTokens;
 import com.legenkiy.note_api.dto.UserDto;
 import com.legenkiy.note_api.model.RefreshToken;
 import com.legenkiy.note_api.model.User;
-import com.legenkiy.note_api.repository.RefreshTokenRepository;
 import com.legenkiy.note_api.service.api.*;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -69,13 +66,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public void logout(HttpServletRequest httpServletRequest) {
         String refreshToken = cookieService.extractTokenFromCookie("refreshToken", httpServletRequest);
         if (refreshToken != null) {
             refreshTokenService.revoke(refreshToken);
         }
-        cookieService.deleteCookie("accessToken", httpServletResponse);
-        cookieService.deleteCookie("refreshToken", httpServletResponse);
 
     }
 

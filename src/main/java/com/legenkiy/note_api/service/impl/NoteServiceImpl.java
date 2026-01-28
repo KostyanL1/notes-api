@@ -6,15 +6,14 @@ import com.legenkiy.note_api.model.Note;
 import com.legenkiy.note_api.model.User;
 import com.legenkiy.note_api.repository.NoteRepository;
 import com.legenkiy.note_api.service.api.NoteService;
-import com.legenkiy.note_api.service.api.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -22,61 +21,64 @@ public class NoteServiceImpl implements NoteService {
 
 
     private final NoteRepository noteRepository;
-    private final UserService userService;
 
 
     @Override
     @Transactional
-    public Long save(NoteDto noteDto) {
-        User user = userService.findById(noteDto.getUserId());
+    public Long save(NoteDto noteDto, User user) {
         Note note = new Note();
         note.setTitle(noteDto.getTitle());
         note.setDescription(noteDto.getDescription());
         note.setLocalDateTime(LocalDateTime.now());
         note.setTags(noteDto.getTags());
         note.setPinned(noteDto.isPinned());
-        note.setArchive(noteDto.isPinned());
-        note.setUserId(user);
+        note.setArchive(noteDto.isArchived());
+        note.setUser(user);
         return noteRepository.save(note).getId();
     }
 
     @Override
-    public Note findById(Long id) {
-        return noteRepository.findById(id).orElseThrow(() -> new RuntimeException("Note not found!"));
+    public Note findById(Long id, Authentication authentication) {
+        return getNoteIfAuthorized(id, authentication);
     }
 
     @Override
-    public List<Note> findAllByUser(User user) {
-        return noteRepository.findAllByUserId(user);
-    }
+    public List<Note> findAllByUserId(Long id) {
 
-    @Override
-    @Transactional
-    public Long update(NoteDto noteDto, Long id) {
-        Optional<Note> noteOptional = noteRepository.findById(id);
-        if (noteOptional.isPresent()){
-            Note note = noteOptional.get();
-            note.setTitle(noteDto.getTitle());
-            note.setDescription(noteDto.getDescription());
-            note.setLocalDateTime(LocalDateTime.now());
-            note.setTags(noteDto.getTags());
-            note.setPinned(noteDto.isPinned());
-            note.setArchive(noteDto.isArchived());
-            return noteRepository.save(note).getId();
-        }
-        else {
-            throw new RuntimeException("Failed to update!");
-        }
+        return noteRepository.findAllByUserId(id);
     }
 
     @Override
     @Transactional
-    public void delete(Long id) {
-        if (noteRepository.existsById(id)){
-            noteRepository.deleteById(id);
+    public Long update(NoteDto noteDto, Long id, Authentication authentication) {
+        Note note = getNoteIfAuthorized(id, authentication);
+        note.setTitle(noteDto.getTitle());
+        note.setDescription(noteDto.getDescription());
+        note.setLocalDateTime(LocalDateTime.now());
+        note.setTags(noteDto.getTags());
+        note.setPinned(noteDto.isPinned());
+        note.setArchive(noteDto.isArchived());
+        return noteRepository.save(note).getId();
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long id, Authentication authentication) {
+        noteRepository.deleteById(getNoteIfAuthorized(id, authentication).getId());
+
+    }
+
+    private Note getNoteIfAuthorized(Long id, Authentication authentication) {
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> Objects.equals(a.getAuthority(), "ROLE_ADMIN"));
+        Note note;
+        if (isAdmin) {
+            note = noteRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Note not found"));
+        } else {
+            note = noteRepository.findByIdAndUserUsername(id, authentication.getName())
+                    .orElseThrow(() -> new RuntimeException("Not your note"));
         }
-        else {
-            throw new RuntimeException("Failed to delete note!");
-        }
+        return note;
     }
 }
