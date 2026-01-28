@@ -50,6 +50,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public void revoke(String token) {
         RefreshToken refreshToken = findByToken(token);
         refreshToken.setRevoked(true);
+        refreshTokenRepository.save(refreshToken);
     }
 
     @Override
