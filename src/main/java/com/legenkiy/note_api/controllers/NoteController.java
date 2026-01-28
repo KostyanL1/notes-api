@@ -24,9 +24,17 @@ public class NoteController {
 
 
     @GetMapping()
-    public ResponseEntity<List<Note>> getAllByUser(Authentication authentication) {
+    public ResponseEntity<List<NoteDto>> getAllByUser(Authentication authentication) {
         User user = userService.findByUsername(authentication.getName());
-        return ResponseEntity.ok(noteService.findAllByUserId(user.getId()));
+        List<NoteDto> noteDtoList = noteService.findAllByUserId(user.getId()).stream()
+                .map(n -> new NoteDto(
+                        n.getTitle(),
+                        n.getDescription(),
+                        n.getTags(),
+                        n.isPinned(),
+                        n.isArchive()
+                        )).toList();
+        return ResponseEntity.ok(noteDtoList);
     }
 
     @GetMapping("/{id}")
