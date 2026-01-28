@@ -6,6 +6,7 @@ import com.legenkiy.note_api.model.Note;
 import com.legenkiy.note_api.model.User;
 import com.legenkiy.note_api.service.api.NoteService;
 import com.legenkiy.note_api.service.api.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,20 +50,20 @@ public class NoteController {
 
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<Long> saveNote(@RequestBody NoteDto noteDto, Authentication authentication) {
+    @PostMapping()
+    public ResponseEntity<Long> saveNote(@Valid @RequestBody NoteDto noteDto, Authentication authentication) {
         User user = userService.findByUsername(authentication.getName());
         long newNoteId = noteService.save(noteDto, user);
         return ResponseEntity.status(HttpStatus.CREATED).body(newNoteId);
     }
 
-    @PatchMapping("/update/{id}")
-    public ResponseEntity<Long> updateNote(@RequestBody NoteDto noteDto, @PathVariable("id") Long id, Authentication authentication) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<Long> updateNote(@Valid @RequestBody NoteDto noteDto, @PathVariable("id") Long id, Authentication authentication) {
         long updatedNoteId = noteService.update(noteDto, id, authentication);
         return ResponseEntity.ok(updatedNoteId);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Long> deleteNote(@PathVariable("id") Long id, Authentication authentication) {
         noteService.delete(id, authentication);
         return ResponseEntity.ok(id);
