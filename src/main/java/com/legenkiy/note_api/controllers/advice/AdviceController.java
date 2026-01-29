@@ -1,21 +1,27 @@
 package com.legenkiy.note_api.controllers.advice;
 
 
+import com.legenkiy.note_api.dto.ErrorApi;
+import com.legenkiy.note_api.exceptions.ObjectNotFoundExceprion;
 import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.HttpServletRequest;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.io.ObjectStreamException;
-import java.nio.file.AccessDeniedException;
+import java.util.HashMap;
+import java.util.Map;
+
 
 @RestControllerAdvice
 public class AdviceController {
 
-    @ExceptionHandler(ObjectStreamException.class)
+    @ExceptionHandler(ObjectNotFoundExceprion.class)
     public ResponseEntity<?> handleObjectNotFoundException(){
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND).build();
@@ -33,7 +39,7 @@ public class AdviceController {
         return ResponseEntity.badRequest().build();
     }
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<?> handleIllegalArgument() {
+    public ResponseEntity<ErrorApi> handleIllegalArgument() {
         return ResponseEntity.badRequest().build();
     }
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -44,5 +50,4 @@ public class AdviceController {
     public ResponseEntity<?> handleAll() {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
-
 }
