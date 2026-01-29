@@ -1,12 +1,14 @@
 package com.legenkiy.note_api.controllers;
 
 
+import com.legenkiy.note_api.model.User;
 import com.legenkiy.note_api.service.api.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
@@ -16,9 +18,16 @@ public class AdminController {
     private final UserService userService;
 
     @GetMapping("/users")
-    public ResponseEntity<?> users() {
+    public ResponseEntity<List<User>> users() {
         return ResponseEntity.ok(userService.findAll());
     }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id, Authentication authentication){
+        userService.delete(id, authentication);
+        return ResponseEntity.ok().build();
+
+    }
+
 
 
 }

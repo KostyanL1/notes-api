@@ -2,11 +2,13 @@ package com.legenkiy.note_api.service.impl;
 
 
 import com.legenkiy.note_api.dto.NoteDto;
+import com.legenkiy.note_api.exceptions.ObjectNotFoundExceprion;
 import com.legenkiy.note_api.model.Note;
 import com.legenkiy.note_api.model.User;
 import com.legenkiy.note_api.repository.NoteRepository;
 import com.legenkiy.note_api.service.api.NoteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,10 +76,10 @@ public class NoteServiceImpl implements NoteService {
         Note note;
         if (isAdmin) {
             note = noteRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Note not found"));
+                    .orElseThrow(() -> new ObjectNotFoundExceprion("Note not found"));
         } else {
             note = noteRepository.findByIdAndUserUsername(id, authentication.getName())
-                    .orElseThrow(() -> new RuntimeException("Not your note"));
+                    .orElseThrow(() -> new AccessDeniedException("Not your note"));
         }
         return note;
     }

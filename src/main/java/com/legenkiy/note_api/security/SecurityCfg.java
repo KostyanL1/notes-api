@@ -37,7 +37,7 @@ public class SecurityCfg {
                                 .requestMatchers("/auth/register", "/auth/login").anonymous()
                                 .requestMatchers("/auth/refresh", "/auth/logout").permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/user/**", "/note/**").authenticated()
+                                .requestMatchers("/user/**", "/notes/**").authenticated()
                                 .anyRequest().permitAll()
                 ).build();
     }

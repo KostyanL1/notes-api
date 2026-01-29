@@ -1,5 +1,6 @@
 package com.legenkiy.note_api.service.impl;
 
+import com.legenkiy.note_api.exceptions.ObjectNotFoundExceprion;
 import com.legenkiy.note_api.model.User;
 import com.legenkiy.note_api.model.UserDetailsImpl;
 import com.legenkiy.note_api.repository.UserRepository;
@@ -18,7 +19,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found!"));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new ObjectNotFoundExceprion("User not found"));
         return new UserDetailsImpl(user);
     }
 }
