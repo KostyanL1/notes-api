@@ -3,7 +3,7 @@ package com.legenkiy.note_api.service.impl;
 
 import com.legenkiy.note_api.dto.AuthTokens;
 import com.legenkiy.note_api.dto.UserDto;
-import com.legenkiy.note_api.exceptions.ObjectNotFoundExceprion;
+import com.legenkiy.note_api.exceptions.ObjectNotFoundException;
 import com.legenkiy.note_api.model.RefreshToken;
 import com.legenkiy.note_api.model.User;
 import com.legenkiy.note_api.service.api.*;
@@ -45,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthTokens refresh(HttpServletRequest httpServletRequest) {
         String refreshToken = cookieService.extractTokenFromCookie("refreshToken", httpServletRequest);
         if (refreshToken == null) {
-            throw new ObjectNotFoundExceprion("Token not found");
+            throw new ObjectNotFoundException("Token not found");
         }
         RefreshToken refreshTokenEntity = refreshTokenService.findByToken(refreshToken);
         User user = refreshTokenEntity.getUser();

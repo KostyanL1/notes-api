@@ -21,7 +21,7 @@ public class AdminController {
     public ResponseEntity<List<User>> users() {
         return ResponseEntity.ok(userService.findAll());
     }
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id, Authentication authentication){
         userService.delete(id, authentication);
         return ResponseEntity.ok().build();

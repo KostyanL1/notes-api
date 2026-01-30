@@ -3,7 +3,7 @@ package com.legenkiy.note_api.service.impl;
 
 import com.legenkiy.note_api.dto.UserDto;
 import com.legenkiy.note_api.enums.Role;
-import com.legenkiy.note_api.exceptions.ObjectNotFoundExceprion;
+import com.legenkiy.note_api.exceptions.ObjectNotFoundException;
 import com.legenkiy.note_api.model.User;
 import com.legenkiy.note_api.repository.UserRepository;
 import com.legenkiy.note_api.service.api.UserService;
@@ -49,12 +49,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new ObjectNotFoundExceprion("User not found!"));
+        return userRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("User not found!"));
     }
 
     @Override
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new ObjectNotFoundExceprion("User not found!"));
+        return userRepository.findByUsername(username).orElseThrow(() -> new ObjectNotFoundException("User not found!"));
     }
 
     @Override
@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
         User user;
         if (isAdmin) {
             user = userRepository.findById(id).orElseThrow(
-                    () -> new ObjectNotFoundExceprion("User not found")
+                    () -> new ObjectNotFoundException("User not found")
             );
         } else {
             user = userRepository.findByIdAndUsername(id, authentication.getName()).orElseThrow(
