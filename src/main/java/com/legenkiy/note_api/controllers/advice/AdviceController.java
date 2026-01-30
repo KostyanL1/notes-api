@@ -5,7 +5,6 @@ import com.legenkiy.note_api.dto.ErrorValidationApi;
 import com.legenkiy.note_api.exceptions.ObjectNotFoundException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,10 +37,6 @@ public class AdviceController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidation(MethodArgumentNotValidException ex) {
-        return ResponseEntity.badRequest().build();
-    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorValidationApi> handleIllegalArgument() {
@@ -58,13 +53,15 @@ public class AdviceController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorValidationApi> handlerConstraintViolationException(ConstraintViolationException constraintViolationException, HttpServletRequest httpServletRequest) {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorValidationApi> handlerConstraintViolationException(MethodArgumentNotValidException methodArgumentNotValidException, HttpServletRequest httpServletRequest) {
         Map<String, String> erroredFields = new HashMap<>();
-        constraintViolationException.getConstraintViolations().forEach(violation -> {
-                    String key = violation.getPropertyPath().toString();
-                    String value = violation.getMessage();
+        methodArgumentNotValidException.getFieldErrors().forEach(
+                errors -> {
+                    String key = errors.getField();
+                    String value = errors.getDefaultMessage();
                     erroredFields.put(key, value);
+
                 }
         );
         ErrorValidationApi errorApi = ErrorValidationApi.builder()
