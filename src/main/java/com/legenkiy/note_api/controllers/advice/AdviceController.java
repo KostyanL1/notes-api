@@ -2,7 +2,7 @@ package com.legenkiy.note_api.controllers.advice;
 
 
 import com.legenkiy.note_api.dto.ErrorValidationApi;
-import com.legenkiy.note_api.exceptions.ObjectNotFoundExceprion;
+import com.legenkiy.note_api.exceptions.ObjectNotFoundException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -22,7 +22,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class AdviceController {
 
-    @ExceptionHandler(ObjectNotFoundExceprion.class)
+    @ExceptionHandler(ObjectNotFoundException.class)
     public ResponseEntity<?> handleObjectNotFoundException() {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND).build();

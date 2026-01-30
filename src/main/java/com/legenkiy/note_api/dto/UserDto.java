@@ -28,8 +28,6 @@ public class UserDto {
             message = "Password must contain upper, lower, digit and special char (@_.!?#)"
     )
     private String password;
-    @NotNull(message = "Role must be provided")
-    private Role role;
 
 
 }

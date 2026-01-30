@@ -2,7 +2,7 @@ package com.legenkiy.note_api.service.impl;
 
 
 import com.legenkiy.note_api.dto.NoteDto;
-import com.legenkiy.note_api.exceptions.ObjectNotFoundExceprion;
+import com.legenkiy.note_api.exceptions.ObjectNotFoundException;
 import com.legenkiy.note_api.model.Note;
 import com.legenkiy.note_api.model.User;
 import com.legenkiy.note_api.repository.NoteRepository;
@@ -76,7 +76,7 @@ public class NoteServiceImpl implements NoteService {
         Note note;
         if (isAdmin) {
             note = noteRepository.findById(id)
-                    .orElseThrow(() -> new ObjectNotFoundExceprion("Note not found"));
+                    .orElseThrow(() -> new ObjectNotFoundException("Note not found"));
         } else {
             note = noteRepository.findByIdAndUserUsername(id, authentication.getName())
                     .orElseThrow(() -> new AccessDeniedException("Not your note"));

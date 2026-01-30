@@ -1,7 +1,7 @@
 package com.legenkiy.note_api.service.impl;
 
 
-import com.legenkiy.note_api.exceptions.ObjectNotFoundExceprion;
+import com.legenkiy.note_api.exceptions.ObjectNotFoundException;
 import com.legenkiy.note_api.model.RefreshToken;
 import com.legenkiy.note_api.model.User;
 import com.legenkiy.note_api.repository.RefreshTokenRepository;
@@ -26,7 +26,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public RefreshToken findByToken(String token) {
-        return refreshTokenRepository.findByToken(token).orElseThrow(() -> new ObjectNotFoundExceprion("Token not found"));
+        return refreshTokenRepository.findByToken(token).orElseThrow(() -> new ObjectNotFoundException("Token not found"));
     }
 
     @Transactional
@@ -42,7 +42,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public RefreshToken findById(Long id) {
-        return refreshTokenRepository.findById(id).orElseThrow(() -> new ObjectNotFoundExceprion("Token not found"));
+        return refreshTokenRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Token not found"));
     }
 
 
@@ -58,7 +58,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         if (refreshTokenRepository.existsById(id)) {
             refreshTokenRepository.deleteById(id);
         } else {
-            throw new ObjectNotFoundExceprion("Token wasn`t deleted. Token doesn`t exist");
+            throw new ObjectNotFoundException("Token wasn`t deleted. Token doesn`t exist");
         }
 
     }
