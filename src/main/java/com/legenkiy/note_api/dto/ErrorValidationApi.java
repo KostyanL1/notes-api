@@ -2,6 +2,7 @@ package com.legenkiy.note_api.dto;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +11,8 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class ErrorApi {
+@Builder
+public class ErrorValidationApi {
     private String timestamp;
     private int status;
     private String error;
