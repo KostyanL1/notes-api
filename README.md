@@ -56,8 +56,8 @@ This project goes beyond basic CRUD operations to showcase production-ready patt
   **Docker** - Database containerization
 
 ### Security
-- **JWT (JSON Web Tokens)** - Stateless authentication
-- **BCrypt** - Password hashing
+  **JWT (JSON Web Tokens)** - Stateless authentication
+  **BCrypt** - Password hashing
 
 ## Getting Started
 
