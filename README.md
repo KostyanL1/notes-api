@@ -8,6 +8,10 @@ Note API is a pet project built to demonstrate REST API development, security be
 
 This project goes beyond basic CRUD operations to showcase production-ready patterns including JWT-based stateless authentication, refresh token rotation, session tracking, and comprehensive error handling.
 
+## I will add next:
+** Unit tests
+
+
 ## Key Features
 
 ** Authentication**
